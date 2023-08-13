@@ -15,23 +15,30 @@ double Calculator::calc(const char *str)// throw(runtime_error)
     strcpy(_str, str);
 
     char* search = searchOperation(_str);
-    double res;
+    double res = 0;
     char* res_s,
         * r_search;
     int index, len_search;
 
     while(search != nullptr)
     {
-        res = doOperation(search);
-        res_s = doubleToString(res);
+        try {
+            res = doOperation(search);
+        }
+        catch(runtime_error) {
+            throw;
+        }
+
+        if(strcmp(search, _str) == 0)
+            return res;
+
         //  замена
+
+        res_s = doubleToString(res);
 
         r_search = strstr(_str, search);
         index = (int)(r_search - _str);
         len_search = strlen(search);
-
-        if( (len_search + index) >= len_str)
-            return res;
 
         strcat(res_s, _str + index + len_search);
         strcpy(_str + index, res_s);
@@ -103,11 +110,6 @@ void Calculator::splitChar(const char *str, int i)
     strncpy(s1, str, i);
     s1[i-1] = '\0';
     strcpy(s2, str + i);
-
-    //    std::cout << "\nhave_plus\ns1 = '" << s1
-    //              << "'\ns2 = '" << s2
-    //              << "'\nresult = " << i
-    //              << "\n";
 
     try {
         d1 = stringToDouble(s1);
@@ -185,7 +187,7 @@ char* Calculator::searchOperation(const char *str)
 
     //  Возводим в степень
 
-    r_search = strstr( str, "^" );
+    r_search = strrchr( str, '^' );
 
     if(r_search == nullptr)
     {
