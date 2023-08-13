@@ -50,7 +50,8 @@ add_executable(test_expressionCalculation
     ${PROJECT_SOURCES}
     ${GTestFiles}
     tst_test_calc_searchOperation.cpp
-    tst_test_calc_double_to_string.cpp)
+    tst_test_calc_double_to_string.cpp
+    tst_test_calc_calc.cpp)
 
 add_test(NAME test_expressionCalculation COMMAND test_expressionCalculation)
 target_link_libraries(test_expressionCalculation PRIVATE Threads::Threads)

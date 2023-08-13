@@ -10,22 +10,44 @@ Calculator::Calculator()
 
 double Calculator::calc(const char *str)// throw(runtime_error)
 {
-    _str = new char (strlen(str));
+    int len_str = strlen(str);
+    char* _str = new char (len_str);
     strcpy(_str, str);
+
     char* search = searchOperation(_str);
     double res;
+    char* res_s,
+        * r_search;
+    int index, len_search;
 
     while(search != nullptr)
     {
         res = doOperation(search);
-
+        res_s = doubleToString(res);
         //  замена
 
+        r_search = strstr(_str, search);
+        index = (int)(r_search - _str);
+        len_search = strlen(search);
 
+        if( (len_search + index) >= len_str)
+            return res;
+
+        strcat(res_s, _str + index + len_search);
+        strcpy(_str + index, res_s);
 
         search = searchOperation(_str);
     }
-    return _result;
+
+    double result = 0;
+    try {
+        result = stringToDouble(_str);
+    }
+    catch(runtime_error) {
+        throw;
+    }
+
+    return result;
 }
 
 
@@ -33,41 +55,41 @@ double Calculator::calc(const char *str)// throw(runtime_error)
 
 bool Calculator::openParenthesis(int index)
 {
-    // Поиск скобок
-    int size = strlen(_str);
-    bool have_open_parenthesis = false,
-        habe_close_parenthesis = false;
+    //    // Поиск скобок
+    //    int size = strlen(_str);
+    //    bool have_open_parenthesis = false,
+    //        habe_close_parenthesis = false;
 
-    int i_open_par = -1,
-        i_close_par = -1;
+    //    int i_open_par = -1,
+    //        i_close_par = -1;
 
-    for(int i = index; i < size; i++)
-    {
-        if( _str[i] == '(' )
-        {
-            if(have_open_parenthesis)
-            {
-                char* temp = _str;
-                //                if(!expressionCalculation())
-                //                    return false;
-            }
+    //    for(int i = index; i < size; i++)
+    //    {
+    //        if( _str[i] == '(' )
+    //        {
+    //            if(have_open_parenthesis)
+    //            {
+    //                char* temp = _str;
+    //                //                if(!expressionCalculation())
+    //                //                    return false;
+    //            }
 
-            i_open_par = i;
-            have_open_parenthesis = true;
-            continue;
-        }
+    //            i_open_par = i;
+    //            have_open_parenthesis = true;
+    //            continue;
+    //        }
 
-        if( _str[i] == ')' )
-        {
-            if(have_open_parenthesis)
-            {
-                i_close_par = i;
-            }
+    //        if( _str[i] == ')' )
+    //        {
+    //            if(have_open_parenthesis)
+    //            {
+    //                i_close_par = i;
+    //            }
 
-            //            throw(runtime_error);
-            return false;
-        }
-    }
+    //            //            throw(runtime_error);
+    //            return false;
+    //        }
+    //    }
 }
 
 
@@ -88,14 +110,14 @@ void Calculator::splitChar(const char *str, int i)
     //              << "\n";
 
     try {
-    d1 = stringToDouble(s1);
-    d2 = stringToDouble(s2);
+        d1 = stringToDouble(s1);
+        d2 = stringToDouble(s2);
     }
     catch(runtime_error) {
-    throw;
+        throw;
     }
-//    delete s1;
-//    delete s2;
+    //    delete s1;
+    //    delete s2;
 }
 
 
@@ -151,42 +173,34 @@ double Calculator::doOperation(const char *str)
 
 char* Calculator::searchOperation(const char *str)
 {
-    //  Операции ( ), +, -, *, /, ^
+    char* r_search = strpbrk( str, "^*/+-" );
 
-    double res = 0;
+    if( r_search == nullptr)
+        return r_search;
+
+
+    //  Операции ( ), +, -, *, /, ^
 
     //  Первая по приоритету выполнения скобочки, но игнорируем её пока
 
     //  Возводим в степень
 
-    char *r_search = strstr( str, "^" );
-
-//    std::cout << "\nstr '" << str << "'\nr_search " << r_search;
+    r_search = strstr( str, "^" );
 
     if(r_search == nullptr)
     {
-        //  Умножение
-
-        r_search = strstr( str, "*" );
+        //  Умножение или деление
+        r_search = strpbrk( str, "*/" );
 
         if(r_search == nullptr)
         {
-            //  Деление
-            r_search = strstr( str, "/" );
-            if(r_search == nullptr)
-            {
-                //  Сложение
-                r_search = strstr( str, "+" );
+            //  Сложение или вычитание
+            r_search = strpbrk( str, "+-" );
 
-                if(r_search == nullptr)
-                {
-                    //  Вычитание
-                    r_search = strstr( str, "-" );
-                }
-            }
+            if(r_search == nullptr)
+                return r_search;
         }
     }
-
 
     int len = strlen(str);
     int i_oper = (int)(r_search - str + 1);
@@ -194,7 +208,6 @@ char* Calculator::searchOperation(const char *str)
 
     //  Поиск символов справа. Допустимое значение пробелы, числа, точка числа '  555.777'
     bool first_space_go = true,
-        digit_go = false,
         first_dot_dont = true;
 
     int right_limit = -1;
@@ -213,7 +226,6 @@ char* Calculator::searchOperation(const char *str)
 
         if(charIsDigit(sym))
         {
-//            digit_go = true;
             continue;
         }
 
@@ -232,7 +244,6 @@ char* Calculator::searchOperation(const char *str)
 
     //  Поиск символов слева. Допустимое значение пробелы, числа, точка числа '  555.777'
     first_space_go = true;
-    digit_go = false;
     first_dot_dont = true;
 
     int left_limit = 0;
@@ -251,7 +262,6 @@ char* Calculator::searchOperation(const char *str)
 
         if(charIsDigit(sym))
         {
-//            digit_go = true;
             continue;
         }
 
@@ -270,14 +280,6 @@ char* Calculator::searchOperation(const char *str)
     char* str_op = new char(len);
     strncpy(str_op, str + left_limit, len_new);
     str_op[len_new] = '\0';
-
-    //        std::cout << "\nlen " << len
-    //                  << "\ni_oper " << i_oper
-    //                  << "\nleft_limit " << left_limit
-    //                  << "\nright_limit " << right_limit
-    //                  << "\nstr_op '" << str_op
-    //                  << "'\nres " << res
-    //                  << "\n";
 
     return str_op;
 }
@@ -323,8 +325,8 @@ char* Calculator::doubleToString(double num)
 {
     // 567.54564
     int num2 = num;
-    char* result = new char(255);
-    char temp[255];
+    char* result = new char(256);
+    char temp[256];
     temp[0] = '\0';
 
     while( num2 != 0 )

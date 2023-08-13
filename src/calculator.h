@@ -31,9 +31,6 @@ public:
     char* doubleToString(double num);
 
 private:
-    char* _str = nullptr;
-    double _result = 0;
-
     double
         d1 = 0,
         d2 = 0;

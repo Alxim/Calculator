@@ -74,7 +74,7 @@ TestData_2 DataTest2[] = {
     {"4.+1.0  ", "4.+1.0"},   //  18
     {" 12.0+10.0 + 1.", "12.0+10.0"},
     {"  10.0 +1. ", "10.0 +1."},
-    {"55 - 4.+1.0  + 456.", "4.+1.0"},
+    {"55 - 4.+1.0  + 456.", "55 - 4."},
     {"12.0 + 10.0", "12.0 + 10.0"},
 
     ///  Тесты на вычитание
@@ -87,7 +87,7 @@ TestData_2 DataTest2[] = {
 
     };
 
-INSTANTIATE_TEST_SUITE_P(Calculator2,
+INSTANTIATE_TEST_SUITE_P(Calculator_2,
                          TestCalculator_2,
                          ValuesIn(DataTest2));
 
