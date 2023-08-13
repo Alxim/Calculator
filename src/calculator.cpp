@@ -313,8 +313,57 @@ double Calculator::stringToDouble(const char *str)
     return res;
 }
 
-
 bool Calculator::charIsDigit(char sym)
 {
     return sym >= '0' && sym <= '9';
+}
+
+
+char* Calculator::doubleToString(double num)
+{
+    // 567.54564
+    int num2 = num;
+    char* result = new char(255);
+    char temp[255];
+    temp[0] = '\0';
+
+    while( num2 != 0 )
+    {
+        char sym = num2%10 + '0';
+        result[0] = sym;
+        result[1] = '\0';
+
+        strcat(result, temp);
+
+        strcpy(temp, result);
+        num2 = num2/10;
+    }
+
+    strcat(result, ".");
+
+    num = num - int(num);
+    int i = 0,
+        i_null = 0;
+    while( num > 0 && i < 11 )
+    {
+        num *= 10;
+        int num_int = num;
+        char sym = num_int + '0';
+        temp[0] = sym;
+        temp[1] = '\0';
+
+        if(sym == '0')
+            i_null++;
+        else
+            i_null = 0;
+
+        strcat(result, temp);
+        num = num - num_int;
+        i++;
+    }
+
+    if(i_null != 0)
+        result[strlen(result) - i_null] = '\0';
+
+    return result;
 }

@@ -28,6 +28,8 @@ public:
 
     char* searchOperation(const char *str);
 
+    char* doubleToString(double num);
+
 private:
     char* _str = nullptr;
     double _result = 0;
