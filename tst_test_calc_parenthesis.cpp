@@ -31,7 +31,7 @@ protected:
 TEST_P(TestCalculator_5, parenthesis)
 {
     TestData_5 Data = GetParam();
-    char* work_res = calc->openParenthesis(Data.expres);
+    char* work_res = calc->extractParenthesis(Data.expres);
     int res = strcmp (work_res, Data.res);
 
     EXPECT_EQ(res, 0) << "\nData.expres '" << Data.expres
@@ -47,13 +47,12 @@ TEST_P(TestCalculator_5, parenthesis)
 TestData_5 DataTest5[] = {
 
     ///  Тесты на открытие скобочек
-    {"(1.)", " 1. " }, // 0
-    {"(1. + 2.)", "3." }, // 1
-    {"(4. - 1.0)", "3." }, // 2
-    {"(2. - 1.0)", "1." }, // 3
-    {"(1. * 2.)", "2." }, // 4
-    {"(1. ^ 2.)", "1." } // 5
-//    {"((1. ^ 2.) + 5.)", "6." } // 6
+    {"(1.)", "1." }, // 0
+    {"(1. + 2.)", "1. + 2." }, // 1
+    {"(4. - 1.0)", "4. - 1.0" }, // 2
+    {"(2. - 1.0)", "2. - 1.0" }, // 3
+    {"(1. * 2.)", "1. * 2." }, // 4
+    {"(1. ^ 2.)", "1. ^ 2." }
     };
 
 INSTANTIATE_TEST_SUITE_P(Calculator_5,

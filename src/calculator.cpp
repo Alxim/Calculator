@@ -10,23 +10,39 @@ Calculator::Calculator()
 
 double Calculator::calc(const char *str)// throw(runtime_error)
 {
-    int len_str = strlen(str);
-    char* _str = new char (len_str);
+    char _str[256];
     strcpy(_str, str);
 
-    char* search = strrchr( _str, '(' );
-//    if(search != nullptr )
-//    {
-//        search = openParenthesis(_str);
-//        _str = search;
-//    }
-
-
-    search = searchOperation(_str);
+    char* search = extractParenthesis(_str);
     double res = 0;
     char* res_s,
         * r_search;
     int index, len_search;
+
+    while(search != nullptr)
+    {
+        res = calc(search);
+
+        if(strcmp(search, _str) == 0)
+            return res;
+
+        //  замена
+
+        res_s = doubleToString(res);
+
+        r_search = strstr(_str, search);
+        index = (int)(r_search - _str);
+        len_search = strlen(search);
+
+        strcat(res_s, _str + index + len_search + 1);
+        strcpy(_str + index - 1, res_s);
+
+        search = extractParenthesis(_str);
+    }
+
+
+    search = searchOperation(_str);
+
 
     while(search != nullptr)
     {
@@ -67,39 +83,16 @@ double Calculator::calc(const char *str)// throw(runtime_error)
 
 
 
-//char* Calculator::searchParenthesis(const char *str)
-//{
-
-//}
-
-char* Calculator::openParenthesis(const char *str)
+char* Calculator::extractParenthesis(const char *str)
 {
     int len_str = strlen(str);
-    char* _str = new char (len_str);
-
-    strcpy(_str, str);
-
-    char* search = searchOperation(_str);
-
-    if(search == nullptr )
-    {
-        for(int i = 0; i < len_str; i++)
-        {
-            if(_str[i] == '(' || _str[i] == ')')
-                _str[i] = ' ';
-        }
-
-        return _str;
-    }
-
-
     int paren_open = -1,
         paren_open_count = 0,
         paren_close = -1;
 
     for(int i = 0; i < len_str; i++)
     {
-        if(_str[i] == '(')
+        if(str[i] == '(')
         {
             paren_open_count++;
 
@@ -110,42 +103,26 @@ char* Calculator::openParenthesis(const char *str)
             }
         }
 
-        if(_str[i] == ')')
+        if(str[i] == ')')
         {
             paren_open_count--;
 
             if(paren_open_count == 0)
             {
                 paren_close = i;
-                char temp[256];
                 int paren_len = paren_close - paren_open - 1;
-                strncpy(temp, _str + paren_open + 1, paren_len);
+
+                char* temp = new char(paren_len);
+
+                strncpy(temp, str + paren_open + 1, paren_len);
                 temp[paren_len] = '\0';
-                double num = calc(temp);
 
-                char* res_s = doubleToString(num);
-
-                //if(i > len_str )
-                    return res_s;
-
-                //  Замена
-//                char* r_search = strstr(_str, search);
-//                int index = (int)(r_search - _str);
-//                int len_search = strlen(search);
-
-//                strcat(res_s, _str + index + len_search + 1);
-//                strcpy(_str + index - 1, res_s);
-//                len_str = strlen(_str);
-
-//                return _str;
+                return temp;
             }
         }
-
     }
 
-
-    //  Вызод '3.'
-    return _str;
+    return nullptr;
 }
 
 
