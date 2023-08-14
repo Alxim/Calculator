@@ -16,7 +16,7 @@ public:
 
 
 
-    bool openParenthesis(int index = 0);
+    char* openParenthesis(const char *str = 0);
 
     /*!
      * \brief doOperation  выполняет операцию описанную в строке. Поддерживаемые операции: +, -, *, /, ^

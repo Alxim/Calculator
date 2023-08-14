@@ -14,7 +14,15 @@ double Calculator::calc(const char *str)// throw(runtime_error)
     char* _str = new char (len_str);
     strcpy(_str, str);
 
-    char* search = searchOperation(_str);
+    char* search = strrchr( _str, '(' );
+//    if(search != nullptr )
+//    {
+//        search = openParenthesis(_str);
+//        _str = search;
+//    }
+
+
+    search = searchOperation(_str);
     double res = 0;
     char* res_s,
         * r_search;
@@ -58,45 +66,86 @@ double Calculator::calc(const char *str)// throw(runtime_error)
 }
 
 
-//  Раскрывает скобки в _str
 
-bool Calculator::openParenthesis(int index)
+//char* Calculator::searchParenthesis(const char *str)
+//{
+
+//}
+
+char* Calculator::openParenthesis(const char *str)
 {
-    //    // Поиск скобок
-    //    int size = strlen(_str);
-    //    bool have_open_parenthesis = false,
-    //        habe_close_parenthesis = false;
+    int len_str = strlen(str);
+    char* _str = new char (len_str);
 
-    //    int i_open_par = -1,
-    //        i_close_par = -1;
+    strcpy(_str, str);
 
-    //    for(int i = index; i < size; i++)
-    //    {
-    //        if( _str[i] == '(' )
-    //        {
-    //            if(have_open_parenthesis)
-    //            {
-    //                char* temp = _str;
-    //                //                if(!expressionCalculation())
-    //                //                    return false;
-    //            }
+    char* search = searchOperation(_str);
 
-    //            i_open_par = i;
-    //            have_open_parenthesis = true;
-    //            continue;
-    //        }
+    if(search == nullptr )
+    {
+        for(int i = 0; i < len_str; i++)
+        {
+            if(_str[i] == '(' || _str[i] == ')')
+                _str[i] = ' ';
+        }
 
-    //        if( _str[i] == ')' )
-    //        {
-    //            if(have_open_parenthesis)
-    //            {
-    //                i_close_par = i;
-    //            }
+        return _str;
+    }
 
-    //            //            throw(runtime_error);
-    //            return false;
-    //        }
-    //    }
+
+    int paren_open = -1,
+        paren_open_count = 0,
+        paren_close = -1;
+
+    for(int i = 0; i < len_str; i++)
+    {
+        if(_str[i] == '(')
+        {
+            paren_open_count++;
+
+            if(paren_open == -1)
+            {
+                paren_open = i;
+                continue;
+            }
+        }
+
+        if(_str[i] == ')')
+        {
+            paren_open_count--;
+
+            if(paren_open_count == 0)
+            {
+                paren_close = i;
+                char temp[256];
+                int paren_len = paren_close - paren_open - 1;
+                strncpy(temp, _str + paren_open + 1, paren_len);
+                temp[paren_len] = '\0';
+                double num = calc(temp);
+
+                char* res_s = doubleToString(num);
+
+                //if(i > len_str )
+                    return res_s;
+
+                //  Замена
+//                char* r_search = strstr(_str, search);
+//                int index = (int)(r_search - _str);
+//                int len_search = strlen(search);
+
+//                strcat(res_s, _str + index + len_search + 1);
+//                strcpy(_str + index - 1, res_s);
+//                len_str = strlen(_str);
+
+//                return _str;
+            }
+        }
+
+    }
+
+
+    //  Вызод '3.'
+    return _str;
 }
 
 
@@ -183,9 +232,9 @@ char* Calculator::searchOperation(const char *str)
 
     //  Операции ( ), +, -, *, /, ^
 
-    //  Первая по приоритету выполнения скобочки, но игнорируем её пока
+    //  Первая по приоритету выполнения скобочки, но она обрабатывается в другом месте
 
-    //  Возводим в степень
+    //  Возводение в степень
 
     r_search = strrchr( str, '^' );
 
@@ -286,6 +335,7 @@ char* Calculator::searchOperation(const char *str)
     return str_op;
 }
 
+
 double Calculator::stringToDouble(const char *str)
 {
     int len = strlen(str);
@@ -316,6 +366,7 @@ double Calculator::stringToDouble(const char *str)
 
     return res;
 }
+
 
 bool Calculator::charIsDigit(char sym)
 {
